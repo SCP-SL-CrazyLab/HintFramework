@@ -14,18 +14,19 @@ namespace CrazyHintFramework.Patches
         {
             try
             {
-                // 1. التحقق من أن HintManager موجود
+                // 1. Verify that HintManager exists
                 if (HintManager.Instance == null)
                 {
                     Log.Error("HintManager.Instance is null!");
-                    return true; // الاستمرار بالدالة الأصلية
+                    return true;//Continue with the original function
+
                 }
 
-                // 2. جلب الـ Hints النشطة وتحقق من وجودها
+                // 2. Fetch the active Hints and check their presence
                 var activeHints = HintManager.Instance.GetActiveHints(__instance);
                 if (activeHints == null || !activeHints.Any())
                 {
-                    Log.Debug("لا توجد رسائل نشطة للاعب.");
+                    Log.Debug("There are no active player messages.");
                     return true;
                 }
 
@@ -34,14 +35,15 @@ namespace CrazyHintFramework.Patches
                 message = topHint.Text;
                 duration = (float)topHint.Duration;
 
-                Log.Debug($"تم تعديل الرسالة إلى: {message} (المدة: {duration} ثانية)");
+                Log.Debug($"The message has been modified to: {message} (Duration: {duration} second)");
             }
             catch (Exception ex)
             {
-                Log.Error($"خطأ في HintPatch: {ex}");
+                Log.Error($"Error in HintPatch: {ex}");
             }
 
-            return true; // الاستمرار بالدالة الأصلية مع القيم المعدلة
+            return true; //Continue the original function with the modified values
+
         }
     }
 }

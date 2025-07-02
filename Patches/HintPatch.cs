@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CrazyHintFramework.API.Managers;
-using CrazyHintFramework.API.Managers;
 using CrazyHintFramework.API.Models;
 
 namespace CrazyHintFramework.Patches
 {
     /// <summary>
-    /// Harmony Patch لتعديل طريقة عرض Hints في اللعبة.
+    /// Harmony Patch to modify how hints are shown in the game.
     /// </summary>
     [HarmonyPatch]
     public class HintPatch
     {
-        // تخزين آخر رسالة ظهرت لكل لاعب لتجنب التكرار
+        // Stores the last displayed hint per player to avoid duplication
         private static readonly Dictionary<Player, string> _lastDisplayedHints = new();
 
         /// <summary>
-        /// تحديد الطريقة المستهدفة (ShowHint) باستخدام الانعكاس (Reflection).
+        /// Identifies the target method (ShowHint) using reflection.
         /// </summary>
         [HarmonyTargetMethod]
         public static MethodBase TargetMethod()
@@ -51,12 +50,12 @@ namespace CrazyHintFramework.Patches
                 }
             }
 
-            Log.Warn("لم يتم العثور على طريقة ShowHint في اللعبة.");
+            Log.Warn("ShowHint method was not found in the game.");
             return null;
         }
 
         /// <summary>
-        /// Prefix patch لتغيير محتوى الرسالة قبل عرضها.
+        /// Prefix patch to modify the message content before it's shown.
         /// </summary>
         [HarmonyPrefix]
         public static bool Prefix(object __instance, object[] __args, ref object __result)
@@ -94,29 +93,29 @@ namespace CrazyHintFramework.Patches
             }
             catch (Exception ex)
             {
-                Log.Error($"خطأ في HintPatch.Prefix: {ex}");
+                Log.Error($"Error in HintPatch.Prefix: {ex}");
                 return true;
             }
         }
 
         /// <summary>
-        /// Postfix patch (يمكن استخدامه لاحقًا لأغراض أخرى).
+        /// Postfix patch (can be used later for additional actions).
         /// </summary>
         [HarmonyPostfix]
         public static void Postfix(object __instance, object[] __args, object __result)
         {
             try
             {
-                // يمكن استخدام هذه الطريقة لاحقًا إذا احتجت لتنفيذ شيء بعد عرض الرسالة
+                // Can be used in future to execute something after showing the hint
             }
             catch (Exception ex)
             {
-                Log.Error($"خطأ في HintPatch.Postfix: {ex}");
+                Log.Error($"Error in HintPatch.Postfix: {ex}");
             }
         }
 
         /// <summary>
-        /// استخراج كائن اللاعب من سياق المثيل أو المعطيات.
+        /// Extracts the Player object from context (instance or arguments).
         /// </summary>
         private static Player GetPlayerFromContext(object instance, object[] args)
         {
@@ -157,13 +156,13 @@ namespace CrazyHintFramework.Patches
             }
             catch (Exception ex)
             {
-                Log.Error($"خطأ في GetPlayerFromContext: {ex}");
+                Log.Error($"Error in GetPlayerFromContext: {ex}");
                 return null;
             }
         }
 
         /// <summary>
-        /// تنظيف القاموس عند إعادة تحميل الإضافة أو إيقافها.
+        /// Clears the dictionary when reloading or stopping the plugin.
         /// </summary>
         public static void Cleanup()
         {

@@ -1,97 +1,98 @@
- using System;
- using System.Threading.Tasks;
- using Exiled.API.Features;
- using CrazyHintFramework.API;
- namespace CrazyHintFramework.Diagnostics
- {
- public class SystemMonitor
- {
- private bool _isMonitoring;
- private readonly TimeSpan _monitoringInterval =
- TimeSpan.FromSeconds(30);
- public async Task StartMonitoring()
- {
- if (_isMonitoring) return;
- _isMonitoring = true;
- Log.Info("ماظنلا ةبقارم ءدب...");
- while (_isMonitoring)
- {
- try
- {
- await PerformHealthCheck();
- await Task.Delay(_monitoringInterval);
- }
- catch (Exception ex)
- {
- Log.Error($"ماظنلا ةبقارم يف أطخ: {ex}");
- }
- }
- }
- public void StopMonitoring()
- {
- _isMonitoring = false;
- Log.Info("ماظنلا ةبقارم فاقيإ مت");
- }
- private async Task PerformHealthCheck()
- {
- var healthReport = new HealthReport();
- // لمعلا راطإ رفوت صحف
- healthReport.FrameworkAvailable =
-HintAPI.IsAvailable();
- // نيطشنلا نيبعلالا ددع صحف
- healthReport.ActivePlayers = Player.List.Count;
- // ـلا يلامجإ صحف Hints ةطشنلا
- healthReport.TotalActiveHints = 0;
- foreach (var player in Player.List)
- {
- healthReport.TotalActiveHints +=
- HintAPI.GetActiveHints(player).Count;
- }
- // ةركاذلا مادختسا صحف
- var memoryBefore = GC.GetTotalMemory(false);
- GC.Collect();
- var memoryAfter = GC.GetTotalMemory(true);
- healthReport.MemoryUsage = memoryAfter;
- healthReport.MemoryFreed = memoryBefore / memoryAfter;
- // لكاشم كانه ناك اذإ ريرقتلا ةعابط
- if (healthReport.HasIssues())
- {
- healthReport.PrintReport();
- }
- }
- public class HealthReport
- {
- public bool FrameworkAvailable { get; set; }
- public int ActivePlayers { get; set; }
- public int TotalActiveHints { get; set; }
- public long MemoryUsage { get; set; }
- public long MemoryFreed { get; set; }
- public DateTime Timestamp { get; set; } =
- DateTime.Now;
- public bool HasIssues()
- {
- return !FrameworkAvailable ||
- TotalActiveHints > ActivePlayers * 20
- || // 20 نم رثكأ hint بعلا لكل
- MemoryUsage > 100 * 1024 * 1024; // رثكأ 
- // 100 recomanded
- }
- public void PrintReport()
- {
- Log.Warn("=== ماظنلا ةحص ريرقت ===");
- Log.Info($"تقولا: {Timestamp}");
- Log.Info($"رفوتم لمعلا راطإ: {(FrameworkAvailable ? "✅" : "❌")}");
- Log.Info($"نوطشنلا نوبعلالا: {ActivePlayers}");
- Log.Info($"ـلا يلامجإ Hints ةطشنلا: {TotalActiveHints}");
- Log.Info($"ةركاذلا مادختسا: {MemoryUsage / 
-1024 / 1024:F2} تياباجيم");
- if (MemoryFreed > 0)
- {
- Log.Info($"ةررحم ةركاذ: {MemoryFreed / 
-1024 / 1024:F2} تياباجيم");
- }
- Log.Info("===========================");
- }
- }
- }
- }
+using System;
+using System.Threading.Tasks;
+using Exiled.API.Features;
+using CrazyHintFramework.API;
+
+namespace CrazyHintFramework.Diagnostics
+{
+    public class SystemMonitor
+    {
+        private bool _isMonitoring;
+        private readonly TimeSpan _monitoringInterval = TimeSpan.FromSeconds(30);
+
+        public async Task StartMonitoring()
+        {
+            if (_isMonitoring) return;
+            _isMonitoring = true;
+
+            Log.Info("System monitoring has started...");
+
+            while (_isMonitoring)
+            {
+                try
+                {
+                    await PerformHealthCheck();
+                    await Task.Delay(_monitoringInterval);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Error during system monitoring: {ex}");
+                }
+            }
+        }
+
+        public void StopMonitoring()
+        {
+            _isMonitoring = false;
+            Log.Info("System monitoring has stopped.");
+        }
+
+        private async Task PerformHealthCheck()
+        {
+            var report = new HealthReport
+            {
+                FrameworkAvailable = HintAPI.IsAvailable(),
+                ActivePlayers = Player.List.Count,
+                TotalActiveHints = 0,
+                Timestamp = DateTime.Now
+            };
+
+            foreach (var player in Player.List)
+            {
+                report.TotalActiveHints += HintAPI.GetActiveHints(player).Count;
+            }
+
+            long memoryBefore = GC.GetTotalMemory(false);
+            GC.Collect();
+            long memoryAfter = GC.GetTotalMemory(true);
+
+            report.MemoryUsage = memoryAfter;
+            report.MemoryFreed = memoryBefore - memoryAfter;
+
+            if (report.HasIssues())
+                report.PrintReport();
+        }
+
+        public class HealthReport
+        {
+            public bool FrameworkAvailable { get; set; }
+            public int ActivePlayers { get; set; }
+            public int TotalActiveHints { get; set; }
+            public long MemoryUsage { get; set; }
+            public long MemoryFreed { get; set; }
+            public DateTime Timestamp { get; set; }
+
+            public bool HasIssues()
+            {
+                return !FrameworkAvailable ||
+                       TotalActiveHints > ActivePlayers * 20 || // More than 20 hints per player
+                       MemoryUsage > 100 * 1024 * 1024;         // More than 100MB usage
+            }
+
+            public void PrintReport()
+            {
+                Log.Warn("=== System Health Report ===");
+                Log.Info($"Timestamp: {Timestamp}");
+                Log.Info($"Framework Available: {(FrameworkAvailable ? "✅" : "❌")}");
+                Log.Info($"Active Players: {ActivePlayers}");
+                Log.Info($"Total Active Hints: {TotalActiveHints}");
+                Log.Info($"Memory Usage: {MemoryUsage / 1024 / 1024:F2} MB");
+
+                if (MemoryFreed > 0)
+                    Log.Info($"Memory Freed After GC: {MemoryFreed / 1024 / 1024:F2} MB");
+
+                Log.Info("=============================");
+            }
+        }
+    }
+}

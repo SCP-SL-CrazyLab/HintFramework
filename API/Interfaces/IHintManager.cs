@@ -6,74 +6,76 @@ using CrazyHintFramework.API.Models;
 
 namespace CrazyHintFramework.API.Interfaces
 {
+  
     /// <summary>
-    /// واجهة إدارة الـ Hints
+    /// Hints management interface
     /// </summary>
     public interface IHintManager
     {
         /// <summary>
-        /// إضافة Hint جديد للاعب
+        /// Add a new Hint for the player
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hint">بيانات الـ Hint</param>
-        /// <returns>true إذا تم إضافة الـ Hint بنجاح</returns>
+        /// <param name="player">Player</param>
+        /// <param name="hint">Hint data</param>
+        /// <returns>true if the Hint was added successfully</returns>
         bool AddHint(Player player, HintData hint);
 
         /// <summary>
-        /// إزالة Hint محدد للاعب
+        /// Remove a player specific Hint
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hintId">معرف الـ Hint</param>
-        /// <returns>true إذا تم إزالة الـ Hint بنجاح</returns>
+        /// <param name="player">Player</param>
+        /// <param name="hintId">Hint ID</param>
+        /// <returns>true if the Hint was removed successfully</returns>
         bool RemoveHint(Player player, string hintId);
 
         /// <summary>
-        /// إزالة جميع الـ Hints للاعب
+        /// Removes all player Hints
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <returns>عدد الـ Hints التي تم إزالتها</returns>
+        /// <param name="player">Player</param>
+        /// <returns>The number of Hints removed</returns>
         int ClearHints(Player player);
 
         /// <summary>
-        /// إزالة جميع الـ Hints من بلغن محدد للاعب
+        /// Removes all Hints from a specific player's report
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="sourcePlugin">اسم البلغن المصدر</param>
-        /// <returns>عدد الـ Hints التي تم إزالتها</returns>
+        /// <param name="player">Player</param>
+        /// <param name="sourcePlugin">Name of the source plugin</param>
+        /// <returns>The number of Hints removed</returns>
         int ClearHintsFromPlugin(Player player, string sourcePlugin);
 
         /// <summary>
-        /// الحصول على جميع الـ Hints النشطة للاعب
+        /// Get all the player's active Hints
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <returns>قائمة بالـ Hints النشطة</returns>
+        /// <param name="player">Player</param>
+        /// <returns>List of active Hints</returns>
         List<HintData> GetActiveHints(Player player);
 
         /// <summary>
-        /// الحصول على Hint محدد للاعب
+        /// Gets the player's specific Hint
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hintId">معرف الـ Hint</param>
-        /// <returns>الـ Hint إذا وُجد، null إذا لم يوجد</returns>
+        /// <param name="player">Player</param>
+        /// <param name="hintId">Hint ID</param>
+        /// <returns>Hint if found, null if not</returns>
         HintData GetHint(Player player, string hintId);
 
         /// <summary>
-        /// تحديث جميع الـ Hints وإزالة المنتهية الصلاحية
+        /// Update all Hints and remove expired ones
         /// </summary>
         void UpdateHints();
 
         /// <summary>
-        /// حدث يتم تشغيله عند إضافة Hint جديد
+        /// An event that is fired when a new Hint is added
         /// </summary>
         event Action<Player, HintData> HintAdded;
 
+      
         /// <summary>
-        /// حدث يتم تشغيله عند إزالة Hint
+        /// An event that is fired when Hint is removed
         /// </summary>
         event Action<Player, HintData> HintRemoved;
 
         /// <summary>
-        /// حدث يتم تشغيله عند انتهاء صلاحية Hint
+        /// An event that is fired when Hint expires
         /// </summary>
         event Action<Player, HintData> HintExpired;
     }

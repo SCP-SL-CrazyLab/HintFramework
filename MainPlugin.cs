@@ -15,7 +15,7 @@ namespace CrazyHintFramework
         public override string Name => "CrazyHintFramework";
         public override string Author => "MONCEF50G";
         public override Version Version => new Version(1, 0, 0);
-        public override Version RequiredExiledVersion => new Version(9, 6, 0); 
+        public override Version RequiredExiledVersion => new Version(9, 6, 1); 
 
         public static MainPlugin Instance { get; private set; }
         private Harmony _harmony;
@@ -53,7 +53,7 @@ namespace CrazyHintFramework
             _hintDisplayManager?.Stop();
 
             // إلغاء Patch Harmony
-            _harmony.UnpatchAll("com.manusai.yourhintframework");
+            _harmony.UnpatchAll("com.MONCEF50G.CrazyHintFramework");
 
             // تنظيف بيانات الـ Hints
             HintManager.Instance.Cleanup();

@@ -7,20 +7,20 @@ using CrazyHintFramework.API.Models;
 
 namespace CrazyHintFramework.API
 {
-    /// <summary>
-    /// الواجهة العامة لإطار عمل الـ Hints
+    /// <Summary>
+    /// The public interface of the Hints framework
     /// </summary>
     public static class HintAPI
     {
         /// <summary>
-        /// عرض Hint للاعب
+        /// Hint display to the player
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="text">النص</param>
-        /// <param name="duration">المدة بالثواني</param>
-        /// <param name="priority">الأولوية (افتراضي: 0)</param>
-        /// <param name="sourcePlugin">اسم البلغن المصدر (افتراضي: "Unknown")</param>
-        /// <returns>معرف الـ Hint إذا تم إنشاؤه بنجاح، null إذا فشل</returns>
+        /// <param name="player">Player</param>
+        /// <param name="text">Text</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="priority">Priority (default: 0)</param>
+        /// <param name="sourcePlugin">Source plugin name (default: "Unknown")</param>
+        /// <returns>The identifier of the Hint if it was created successfully, null if it failed</returns>
         public static string ShowHint(Player player, string text, float duration, int priority = 0, string sourcePlugin = "Unknown")
         {
             if (player == null || string.IsNullOrEmpty(text) || duration <= 0)
@@ -32,13 +32,13 @@ namespace CrazyHintFramework.API
         }
 
         /// <summary>
-        /// عرض Hint لجميع اللاعبين
+        /// Hint display for all players
         /// </summary>
-        /// <param name="text">النص</param>
-        /// <param name="duration">المدة بالثواني</param>
-        /// <param name="priority">الأولوية (افتراضي: 0)</param>
-        /// <param name="sourcePlugin">اسم البلغن المصدر (افتراضي: "Unknown")</param>
-        /// <returns>قائمة بمعرفات الـ Hints التي تم إنشاؤها</returns>
+        /// <param name="text">Text</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="priority">Priority (default: 0)</param>
+        /// <param name="sourcePlugin">Source plugin name (default: "Unknown")</param>
+        /// <returns>List of generated Hints</returns>
         public static List<string> ShowHintToAll(string text, float duration, int priority = 0, string sourcePlugin = "Unknown")
         {
             var hintIds = new List<string>();
@@ -56,74 +56,77 @@ namespace CrazyHintFramework.API
         }
 
         /// <summary>
-        /// إخفاء Hint محدد للاعب
+        ///Hide player specific Hint
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hintId">معرف الـ Hint</param>
-        /// <returns>true إذا تم إخفاء الـ Hint بنجاح</returns>
+        /// <param name="player">Player</param>
+        /// <param name="hintId">Hint ID</param>
+        /// <returns>true if the Hint was successfully hidden</returns>
         public static bool HideHint(Player player, string hintId)
         {
             return HintManager.Instance.RemoveHint(player, hintId);
         }
 
+    
         /// <summary>
-        /// إخفاء جميع الـ Hints للاعب
+        /// Hide all Hints for the player
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <returns>عدد الـ Hints التي تم إخفاؤها</returns>
+        /// <param name="player">Player</param>
+        /// <returns>The number of hidden Hints</returns>
         public static int HideAllHints(Player player)
         {
             return HintManager.Instance.ClearHints(player);
         }
 
         /// <summary>
-        /// إخفاء جميع الـ Hints من بلغن محدد للاعب
+        /// Hide all Hints from a specific player's login
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="sourcePlugin">اسم البلغن المصدر</param>
-        /// <returns>عدد الـ Hints التي تم إخفاؤها</returns>
+        /// <param name="player">Player</param>
+        /// <param name="sourcePlugin">Name of the source plugin</param>
+        /// <returns>The number of hidden Hints</returns>
         public static int HideHintsFromPlugin(Player player, string sourcePlugin)
         {
             return HintManager.Instance.ClearHintsFromPlugin(player, sourcePlugin);
         }
 
+       
         /// <summary>
-        /// الحصول على جميع الـ Hints النشطة للاعب
+        /// Get all the player's active Hints
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <returns>قائمة بالـ Hints النشطة</returns>
+        /// <param name="player">Player</param>
+        /// <returns>List of active Hints</returns>
         public static List<HintData> GetActiveHints(Player player)
         {
             return HintManager.Instance.GetActiveHints(player);
         }
 
         /// <summary>
-        /// الحصول على Hint محدد للاعب
+        /// Gets the player's specific Hint
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hintId">معرف الـ Hint</param>
-        /// <returns>الـ Hint إذا وُجد، null إذا لم يوجد</returns>
+        /// <param name="player">Player</param>
+        /// <param name="hintId">Hint ID</param>
+        /// <returns>Hint if found, null if not</returns>
         public static HintData GetHint(Player player, string hintId)
         {
             return HintManager.Instance.GetHint(player, hintId);
         }
 
         /// <summary>
-        /// التحقق مما إذا كان إطار عمل الـ Hints متاحًا
+        /// Check if the Hints framework is available
         /// </summary>
-        /// <returns>true إذا كان متاحًا</returns>
+        /// <returns>true if available</returns>
         public static bool IsAvailable()
         {
             return HintManager.Instance != null;
         }
 
         /// <summary>
-        /// الحصول على إصدار إطار عمل الـ Hints
+        /// Get the Hints framework version
         /// </summary>
-        /// <returns>رقم الإصدار</returns>
+        /// <returns>Version number</returns>
         public static string GetVersion()
         {
-            return "1.0.0"; // يمكن تحديث هذا ديناميكيًا من Assembly
+            return "1.2.0"; // This can be updated dynamically from Assembly
+
         }
     }
 }

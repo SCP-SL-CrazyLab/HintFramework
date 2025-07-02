@@ -9,22 +9,22 @@
  namespace CrazyHintFramework.Core.Optimizations
  {
  /// <summary>
- /// ـلل نسحم ريدم Hints ءادلأا تانيسحت عم
+ /// make it easy. Hints. Start again
  /// </summary>
  public class OptimizedHintManager
  {
  private static OptimizedHintManager _instance;
  public static OptimizedHintManager Instance =>
  _instance ??= new OptimizedHintManager();
- // مادختسا ConcurrentDictionary نامضل Thread Safety
+// Use ConcurrentDictionary for Thread Safety
  private readonly ConcurrentDictionary<Player,
  ConcurrentBag<HintData>> _playerHints;
- // تانئاكلا مادختسا ةداعلإ ةعومجم
+// Don't talk to anyone about it
  private readonly ConcurrentQueue<HintData> _hintPool;
- // نيسحتلا تادادعإ
+//Necessary settings
  private readonly int _maxHintsPerPlayer = 10;
  private readonly int _poolSize = 100;
-// ءادلأا تايئاصحإ
+// Get started correctly
  private long _totalHintsCreated;
  private long _totalHintsRemoved;
  private long _poolHits;
@@ -34,7 +34,7 @@
  _playerHints = new ConcurrentDictionary<Player,
  ConcurrentBag<HintData>>();
  _hintPool = new ConcurrentQueue<HintData>();
- // ً اقبسم ةعومجملا ءلم
+// Divide the word into a suitable sentence
  PreFillPool();
  }
  private void PreFillPool()
@@ -50,7 +50,7 @@
  if (player == null || string.IsNullOrEmpty(text) ||
  duration <= 0)
  return false;
- // ىلع لوصحلا hint ديدج ءاشنإ وأ ةعومجملا نم
+// On the right hint hint about what happened or what happened in general
  var hint = GetHintFromPool();
  if (hint == null)
  {
@@ -60,7 +60,7 @@
  }
  else
  {
- // ـلا ةئيهت ةداعإ hint داعتسملا
+  // Example Created hint for Devlopers
  hint.Text = text;
  hint.Duration = duration;
  hint.Priority = priority;
@@ -72,13 +72,10 @@
  hint.IsActive = true;
 Interlocked.Increment(ref _poolHits);
  }
- // ـلا ةعومجم ىلع لوصحلا hints بعلال
  var playerHints = _playerHints.GetOrAdd(player, _
  => new ConcurrentBag<HintData>());
- // ـلل ىصقلأا دحلا نم ققحتلا hints بعلا لكل
  if (playerHints.Count >= _maxHintsPerPlayer)
  {
- // مدقأ ةلازإ hint
  RemoveOldestHint(player, playerHints);
  }
  playerHints.Add(hint);
@@ -94,7 +91,7 @@ Interlocked.Increment(ref _poolHits);
  {
  if (_hintPool.Count < _poolSize)
  {
- // تانايبلا فيظنت
+ // Hint settings 
  hint.Text = "";
  hint.Duration = 0;
  hint.Priority = 0;
@@ -110,13 +107,10 @@ Interlocked.Increment(ref _poolHits);
  if (hints.Length == 0) return;
  var oldestHint = hints.OrderBy(h =>
  h.CreatedAt).First();
- // ـلا نودب ةديدج ةعومجم ءاشنإ hint مدقلأا
 var newHints = hints.Where(h => h.Id !=
  oldestHint.Id).ToArray();
- // ةعومجملا لادبتسا
  _playerHints.TryUpdate(player, new
  ConcurrentBag<HintData>(newHints), playerHints);
- // ـلا عاجرإ hint ةعومجملا ىلإ
  ReturnHintToPool(oldestHint);
  Interlocked.Increment(ref _totalHintsRemoved);
  }
@@ -146,10 +140,8 @@ var newHints = hints.Where(h => h.Id !=
  <= now).ToArray();
  if (expiredHints.Length > 0)
  {
- // ـلا ةعومجم ثيدحت hints
  _playerHints.TryUpdate(player, new
  ConcurrentBag<HintData>(activeHints), hints);
- // ـلا عاجرإ hints ىلإ ةيحلاصلا ةيهتنملا 
 
  foreach (var expiredHint in expiredHints)
  {
@@ -185,14 +177,14 @@ Interlocked.Increment(ref
  public int PoolSize { get; set; }
  public void PrintStats()
  {
- Log.Info("=== ءادلأا تايئاصحإ ===");
- Log.Info($"ـلا يلامجإ Hints ةأشنملا: {TotalHintsCreated:N0}");
- Log.Info($"ـلا يلامجإ Hints ةفوذحملا: {TotalHintsRemoved:N0}");
- Log.Info($"ةعومجملا تاحاجن: {PoolHits:N0}");
- Log.Info($"ةعومجملا تاقافخإ: {PoolMisses:N0}");
- Log.Info($"ةعومجملا ةءافك: {PoolEfficiency:F2}%");
- Log.Info($"نوطشنلا نوبعلالا: {ActivePlayers}");
- Log.Info($"ةعومجملا مجح: {PoolSize}");
+ Log.Info("=== Fast performens and Optimazed ===");
+ Log.Info($"TotalHintsCreated: {TotalHintsCreated:N0}");
+ Log.Info($"TotalHintsRemoved: {TotalHintsRemoved:N0}");
+ Log.Info($"PoolHits: {PoolHits:N0}");
+ Log.Info($"ةPoolMisses: {PoolMisses:N0}");
+ Log.Info($"PoolEfficiency: {PoolEfficiency:F2}%");
+ Log.Info($"Players Activated: {ActivePlayers}");
+ Log.Info($"Hint Size: {PoolSize}");
  Log.Info("========================");
  }
  }

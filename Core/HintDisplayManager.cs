@@ -9,7 +9,7 @@ using CrazyHintFramework.API.Models;
 namespace CrazyHintFramework.Core
 {
     /// <summary>
-    /// مدير عرض الـ Hints
+    ///Hints display manager
     /// </summary>
     public class HintDisplayManager
     {
@@ -21,10 +21,11 @@ namespace CrazyHintFramework.Core
 
         private HintDisplayManager()
         {
+            HintDisplayManager.Instance.TriggerHintDisplay();
         }
 
         /// <summary>
-        /// بدء نظام عرض الـ Hints
+        /// Start the Hints display system
         /// </summary>
         public void Start()
         {
@@ -35,24 +36,24 @@ namespace CrazyHintFramework.Core
 
                 _isRunning = true;
                 Task.Run(UpdateLoop);
-                Log.Info("تم بدء نظام عرض الـ Hints");
+                Log.Info("The Hints display system has been started");
             }
         }
 
         /// <summary>
-        /// إيقاف نظام عرض الـ Hints
+        ///Stop the Hints display system
         /// </summary>
         public void Stop()
         {
             lock (_lock)
             {
                 _isRunning = false;
-                Log.Info("تم إيقاف نظام عرض الـ Hints");
+                Log.Info("The Hints display system has been discontinued");
             }
         }
 
         /// <summary>
-        /// حلقة التحديث الرئيسية
+        /// Main update loop
         /// </summary>
         private async Task UpdateLoop()
         {
@@ -60,13 +61,13 @@ namespace CrazyHintFramework.Core
             {
                 try
                 {
-                    // تحديث جميع الـ Hints
+                    // Update all Hints
                     HintManager.Instance.UpdateHints();
 
-                    // مع Harmony Patches، لا نحتاج إلى عرض الـ Hints يدويًا
-                    // الـ Patches ستتولى ذلك تلقائيًا عند استدعاء دوال عرض الـ Hints الأصلية
+                    // With Harmony Patches, we don't need to display the Hints manually
+                    // Patches will do this automatically when calling the original Hints display functions
 
-                    // ولكن يمكننا تشغيل عرض دوري للتأكد من أن الـ Hints تظهر
+                    //But we can run a periodic view to make sure the Hints are showing
                     TriggerHintDisplay();
                 }
                 catch (Exception ex)
@@ -74,13 +75,14 @@ namespace CrazyHintFramework.Core
                     Log.Error($"خطأ في حلقة تحديث الـ Hints: {ex}");
                 }
 
-                // انتظار قبل التحديث التالي
-                await Task.Delay(500); // تقليل التكرار لتحسين الأداء
+                // Wait before the next update
+                await Task.Delay(500); // Reduce redundancy to improve performance
+
             }
         }
 
         /// <summary>
-        /// تشغيل عرض الـ Hints للاعبين الذين لديهم hints نشطة
+        /// Turn on Hints display for players with active Hints
         /// </summary>
         private void TriggerHintDisplay()
         {
@@ -94,23 +96,24 @@ namespace CrazyHintFramework.Core
                     var activeHints = HintManager.Instance.GetActiveHints(player);
                     if (activeHints.Count > 0)
                     {
-                        // تشغيل عرض hint فارغ لتفعيل الـ Patch
-                        // الـ Patch سيستبدل هذا بالـ Hint الصحيح
+                     
+                        // Run an empty hint display to activate the patch
+                        // The patch will replace this with the correct Hint
                         player.ShowHint("", 1);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"خطأ في تشغيل عرض الـ Hint للاعب {player?.Nickname}: {ex}");
+                    Log.Error($"Error in playing the Hint display for the player {player?.Nickname}: {ex}");
                 }
             }
         }
 
         /// <summary>
-        /// فرض عرض hint محدد للاعب (للاختبار)
+        /// Force a specific hint width to the player (for testing)
         /// </summary>
-        /// <param name="player">اللاعب</param>
-        /// <param name="hint">الـ Hint</param>
+        /// <param name="player">Player</param>
+        /// <param name="hint">The Hint</param>
         public void ForceDisplayHint(Player player, HintData hint)
         {
             if (player == null || hint == null)
@@ -118,13 +121,13 @@ namespace CrazyHintFramework.Core
 
             try
             {
-                // استدعاء دالة عرض الـ Hint الأصلية
-                // الـ Patch سيتداخل ويعرض الـ Hint من إطار العمل الخاص بنا
+                // Call the original Hint display function
+                // The patch will overlap and display the Hint from our framework
                 player.ShowHint(hint.Text, (ushort)hint.Duration);
             }
             catch (Exception ex)
             {
-                Log.Error($"خطأ في فرض عرض الـ Hint: {ex}");
+                Log.Error($"Error in forcing Hint display: {ex}");
             }
         }
     }

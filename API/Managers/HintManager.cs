@@ -10,17 +10,17 @@ using CrazyHintFramework.API.Models;
 namespace CrazyHintFramework.API.Managers
 {
     /// <summary>
-    /// مدير الـ Hints الرئيسي
+    /// The main Hints manager
     /// </summary>
     public class HintManager : IHintManager
     {
         private static HintManager _instance;
         public static HintManager Instance => _instance ??= new HintManager();
 
-        // قاموس يحتوي على الـ Hints لكل لاعب
+        // A dictionary containing the Hints for each player
         private readonly ConcurrentDictionary<Player, List<HintData>> _playerHints;
 
-        // الأحداث
+        // events
         public event Action<Player, HintData> HintAdded;
         public event Action<Player, HintData> HintRemoved;
         public event Action<Player, HintData> HintExpired;
@@ -35,20 +35,21 @@ namespace CrazyHintFramework.API.Managers
             if (player == null || hint == null)
                 return false;
 
-            // الحصول على قائمة الـ Hints للاعب أو إنشاء قائمة جديدة
+            // Get the player's Hints list or create a new list
             var hints = _playerHints.GetOrAdd(player, _ => new List<HintData>());
 
             lock (hints)
             {
-                // التحقق من عدم وجود Hint بنفس المعرف
+                // Verify that there is no Hint with the same ID
                 if (hints.Any(h => h.Id == hint.Id))
                     return false;
 
                 hints.Add(hint);
-                hints.Sort((h1, h2) => h2.Priority.CompareTo(h1.Priority)); // ترتيب حسب الأولوية
+                hints.Sort((h1, h2) => h2.Priority.CompareTo(h1.Priority)); // Arrange by priority
+
             }
 
-            // تشغيل الحدث
+            // Trigger event
             HintAdded?.Invoke(player, hint);
             return true;
         }
@@ -163,7 +164,7 @@ namespace CrazyHintFramework.API.Managers
                 var player = kvp.Key;
                 var hints = kvp.Value;
 
-                // التحقق من صحة اللاعب
+                // Validate the player
                 if (player == null || !Player.List.Contains(player))
                 {
                     playersToRemove.Add(player);
@@ -174,7 +175,7 @@ namespace CrazyHintFramework.API.Managers
                 {
                     var expiredHints = new List<HintData>();
 
-                    // تحديث حالة الـ Hints والعثور على المنتهية الصلاحية
+                    // Update the status of Hints and find expired ones
                     foreach (var hint in hints.ToList())
                     {
                         hint.UpdateStatus();
@@ -184,7 +185,7 @@ namespace CrazyHintFramework.API.Managers
                         }
                     }
 
-                    // إزالة الـ Hints المنتهية الصلاحية
+                    // Remove expired Hints
                     foreach (var expiredHint in expiredHints)
                     {
                         hints.Remove(expiredHint);
@@ -193,7 +194,7 @@ namespace CrazyHintFramework.API.Managers
                 }
             }
 
-            // إزالة اللاعبين غير الصحيحين
+            //Remove invalid players
             foreach (var player in playersToRemove)
             {
                 _playerHints.TryRemove(player, out _);
@@ -201,7 +202,7 @@ namespace CrazyHintFramework.API.Managers
         }
 
         /// <summary>
-        /// تنظيف جميع البيانات (يُستخدم عند إيقاف البلغن)
+        /// Clean all data (used when reporting is stopped)
         /// </summary>
         public void Cleanup()
         {

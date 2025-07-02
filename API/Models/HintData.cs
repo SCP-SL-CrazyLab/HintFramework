@@ -4,57 +4,63 @@ using System;
 namespace CrazyHintFramework.API.Models
 {
     /// <summary>
-    /// يمثل بيانات Hint واحد
+    /// Represents single Hint data
     /// </summary>
     public class HintData
     {
+    
         /// <summary>
-        /// النص الذي سيتم عرضه
+        /// The text to be displayed
         /// </summary>
         public string Text { get; set; }
 
+    
         /// <summary>
-        /// مدة عرض الـ Hint بالثواني
+        /// The duration of the Hint display in seconds
         /// </summary>
         public float Duration { get; set; }
 
+        
         /// <summary>
-        /// أولوية الـ Hint (الأرقام الأعلى لها أولوية أكبر)
+        /// Hint priority (higher numbers have greater priority)
         /// </summary>
         public int Priority { get; set; }
 
+     
         /// <summary>
-        /// معرف فريد للـ Hint
+        /// A unique identifier for the Hint
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// اسم البلغن الذي أنشأ هذا الـ Hint
+        /// The name of the person who created this Hint
         /// </summary>
         public string SourcePlugin { get; set; }
 
         /// <summary>
-        /// الوقت الذي تم إنشاء الـ Hint فيه
+        /// The time at which the Hint was created
         /// </summary>
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
-        /// الوقت الذي سينتهي فيه الـ Hint
+        /// The time at which the Hint will expire
         /// </summary>
         public DateTime ExpiresAt { get; set; }
 
+      
         /// <summary>
-        /// هل الـ Hint نشط حاليًا؟
+        /// Is the Hint currently active?
         /// </summary>
         public bool IsActive { get; set; }
 
+     
         /// <summary>
-        /// إنشاء Hint جديد
+        /// Create a new Hint
         /// </summary>
-        /// <param name="text">النص</param>
-        /// <param name="duration">المدة بالثواني</param>
-        /// <param name="priority">الأولوية</param>
-        /// <param name="sourcePlugin">اسم البلغن المصدر</param>
+        /// <param name="text">Text</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="priority">Priority</param>
+        /// <param name="sourcePlugin">Name of the source plugin</param>
         public HintData(string text, float duration, int priority = 0, string sourcePlugin = "Unknown")
         {
             Text = text;
@@ -67,17 +73,19 @@ namespace CrazyHintFramework.API.Models
             IsActive = true;
         }
 
+    
         /// <summary>
-        /// التحقق مما إذا كان الـ Hint قد انتهت صلاحيته
+        /// Check if the Hint has expired
         /// </summary>
-        /// <returns>true إذا انتهت الصلاحية</returns>
+        /// <returns>true if expired</returns>
         public bool IsExpired()
         {
             return DateTime.Now > ExpiresAt;
         }
 
+    
         /// <summary>
-        /// تحديث حالة الـ Hint بناءً على الوقت الحالي
+        /// Updates the Hint status based on the current time
         /// </summary>
         public void UpdateStatus()
         {
